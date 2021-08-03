@@ -15,7 +15,9 @@ If you just want to let it run in the background and recreate your files in real
 # Example
 I included a little map and its tileset so you can see how I configured it for now.
 
-`python ./t2gwatcher.py -i ./maps/example_map.tmx` will generate the .c and .h of both the tileset and the map. 
+`python ./tmx2gbdk.py -i ./maps/example_map.tmx` will generate the .c and .h of both the tileset and the map. 
+
+`python ./t2gwatcher.py` will continuously regenerate these files as you work on them.
 
 You can see them changing in real time by editing `maps/example_map.tmx` in Tiled or editing `tilesets/tileset.png` in any image editor.
 
