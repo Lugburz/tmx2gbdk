@@ -15,7 +15,9 @@ If you just want to let it run in the background and recreate your files in real
 # Example
 I included a little map and its tileset so you can see how I configured it for now.
 
-`python ./t2gwatcher.py` will generate the .c and .h of both the tileset and the map. 
+`python ./tmx2gbdk.py -i ./maps/example_map.tmx` will generate the .c and .h of both the tileset and the map. 
+
+`python ./t2gwatcher.py` will continuously regenerate these files as you work on them.
 
 You can see them changing in real time by editing `maps/example_map.tmx` in Tiled or editing `tilesets/tileset.png` in any image editor.
 
@@ -42,6 +44,7 @@ Beside the current limitations, I would like to include support for the followin
 `#define {map_name}{map_property} {map_property_value}`
 - tileset custom properties, to specify which tiles are solid for example
 - allow for one object layer, which could help placing entities on your map
+- make it a javascript extension for Tiled
 
 # Licence
 Example tileset created by [Dennis Payne](https://opengameart.org/users/dulsi).
