@@ -81,12 +81,15 @@ def get_file_content_c(tiles, fname):
     File generated with tileset2gbdk v0.1
 */ 
 
+#define {name}BytesCount {length}
+#define {name}TilesCount {tilesc}
+
 const unsigned char {name}[] = 
 {{
   {content}
 }};
 """
-
+    size = len(tiles)
     content = ''
     i = 0
     for byte in tiles:
@@ -97,9 +100,9 @@ const unsigned char {name}[] =
         if( i % 8 == 0 and i < len(tiles)):
             content += "\n  "
 
-    return str.format(name=fname, content=content)
+    return str.format(name=fname, content=content, length=size, tilesc=int(size/2/8))
 
-def get_file_content_h(fname):
+def get_file_content_h(tiles, fname):
     str = """
 /*
     {name}.h
@@ -110,6 +113,9 @@ def get_file_content_h(fname):
 #ifndef __{name}_h_INCLUDE
 #define __{name}_h_INCLUDE
 
+#define {name}BytesCount {length}
+#define {name}TilesCount {tilesc}
+
 /* Bank of tiles. */
 #define {name}Bank 0
 /* Start of tile array. */
@@ -117,13 +123,14 @@ extern const unsigned char {name}[];
 
 #endif
 """
-    return str.format(name=fname) 
+    size = len(tiles)
+    return str.format(name=fname, length=size, tilesc=int(size/2/8)) 
 
 
 
 # CORE
 # Convert image to byte array and save .c and .h files
-def convert_tileset(img_path, verbose): 
+def convert_tileset(img_path, verbose):
 
     img_basename = os.path.splitext(os.path.basename(img_path))[0]
 
@@ -160,7 +167,7 @@ def convert_tileset(img_path, verbose):
         print(files_noext + ".c saved")
 
 
-    content = get_file_content_h(img_basename)
+    content = get_file_content_h(tiles, img_basename)
     file_c = open(files_noext + ".h","w")
     file_c.write(content)
     file_c.close()

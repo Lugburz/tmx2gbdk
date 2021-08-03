@@ -1,4 +1,4 @@
-import os
+import os, sys
 import time
 import tmx2gbdk
 
@@ -15,14 +15,17 @@ def deep_get_tmx(directory, concat):
     return concat
 
 root = '.'
-verbose = True
+verbose = False
 
+if(len(sys.argv) > 1):
+    for arg in sys.argv[1:]:
+        if arg == '-v':
+            verbose = True
+        else:
+            root = arg
 
 while(1):
     all_files = deep_get_tmx(root, [])
-
-    print(all_files)
-
     for file in all_files:
         tmx2gbdk.convert_tmx(file, verbose)
     time.sleep(5)
