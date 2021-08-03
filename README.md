@@ -42,6 +42,7 @@ Beside the current limitations, I would like to include support for the followin
 `#define {map_name}{map_property} {map_property_value}`
 - tileset custom properties, to specify which tiles are solid for example
 - allow for one object layer, which could help placing entities on your map
+- make it a javascript extension for Tiled
 
 # Licence
 Example tileset created by [Dennis Payne](https://opengameart.org/users/dulsi).
