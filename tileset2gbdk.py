@@ -150,8 +150,8 @@ def convert_tileset(img_path, verbose):
 
     tiles = []
 
-    for c in range(columns):
-        for r in range(rows):
+    for r in range(rows):
+        for c in range(columns):
             tile = convert_one_tile(rgb_im, c, r)
             tiles = tiles + tile
 

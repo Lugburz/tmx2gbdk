@@ -26,6 +26,8 @@ if(len(sys.argv) > 1):
 
 while(1):
     all_files = deep_get_tmx(root, [])
+    if(verbose):
+        print("All files", all_files)
     for file in all_files:
         tmx2gbdk.convert_tmx(file, verbose)
     time.sleep(5)
