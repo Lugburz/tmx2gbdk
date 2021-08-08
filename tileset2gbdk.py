@@ -73,8 +73,7 @@ def convert_one_tile(rgb_im,c,r):
 
 def get_file_content_c(tiles, fname, metadata):
     
-    full_str = """
-/*
+    full_str = """/*
     {name}.c
     
     Tile Source File.
@@ -109,15 +108,14 @@ const unsigned char {name}[] =
             metadata_str += "const unsigned char {name}{key}[] =".format(name=fname, key=key.capitalize())
             metadata_str += "\n{\n  "
 
-            meta_str = map(str, metadata[key])  
+            meta_str =  ["0x{:02X}".format(int) for int in metadata[key]]
             metadata_str += ','.join(meta_str)
             metadata_str += "\n};\n"
 
     return full_str.format(name=fname, content=content, length=size, tilesc=int(size/2/8), metadata=metadata_str)
 
 def get_file_content_h(tiles, fname):
-    str = """
-/*
+    str = """/*
     {name}.h
 
     Tile Include File.

@@ -6,8 +6,7 @@ def int2hexa(decimal_representation):
     return "0x{:02X}".format(decimal_representation)
 
 def get_file_content_c(main_map, w, h, fname):
-    str="""
-/*
+    str="""/*
     {name}.c
     
     Map Source File.
@@ -36,8 +35,7 @@ const unsigned char {name}[] =
     return str.format(name=fname, content=content, width=w, height=h)
 
 def get_file_content_h(main_map, w, h, fname):
-    str="""
-/*
+    str="""/*
     {name}.h
     
     Map Include File.
@@ -81,6 +79,35 @@ def extract_metadata_tiles(node):
                     metadata[key].append(int(current_id))
     return metadata
 
+def read_tileset_node(node, path, verbose):
+
+    if(verbose):
+        print("Found tileset, converting it too")
+
+    node_metadata = None
+    img_path = None
+
+    # if it's an external tileset (tsx)
+    if('source' in node.attrib):
+        absdir = os.path.abspath(os.path.dirname(path))
+        adaptative_path=os.path.join(absdir, node.attrib['source'])
+        tree = ET.parse(adaptative_path)
+        root = tree.getroot()
+        img_path = os.path.join(os.path.dirname(node.attrib['source']), root[0].attrib['source'])
+        node_metadata = root
+    else:
+        # embedded tileset, direct access
+        img_path = node[0].attrib['source']
+        node_metadata = node
+
+    metadata = extract_metadata_tiles(node_metadata)
+
+    absdir = os.path.abspath(os.path.dirname(path))
+    adaptative_path=os.path.join(absdir, img_path)
+
+    tileset2gbdk.convert_tileset(adaptative_path, verbose, metadata)
+
+
 def convert_tmx(path, verbose):
     tree = ET.parse(path)
     root = tree.getroot()
@@ -92,14 +119,7 @@ def convert_tmx(path, verbose):
 
     for child in root:
         if(child.tag == 'tileset'):
-            if(verbose):
-                print("Found tileset, converting it too")
-
-            metadata = extract_metadata_tiles(child)
-
-            absdir = os.path.abspath(os.path.dirname(path))
-            adaptative_path=os.path.join(absdir, child[0].attrib['source'])
-            tileset2gbdk.convert_tileset(adaptative_path, verbose, metadata)
+            read_tileset_node(child, path, verbose)
         elif(child.tag == 'layer'):
             # in layer we want to find our csv background layer
             for subchild in child:
