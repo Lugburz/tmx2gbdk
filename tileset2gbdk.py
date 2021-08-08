@@ -71,9 +71,9 @@ def convert_one_tile(rgb_im,c,r):
     return full_tile;
 
 
-def get_file_content_c(tiles, fname):
+def get_file_content_c(tiles, fname, metadata):
     
-    str = """
+    full_str = """
 /*
     {name}.c
     
@@ -88,6 +88,8 @@ const unsigned char {name}[] =
 {{
   {content}
 }};
+
+{metadata}
 """
     size = len(tiles)
     content = ''
@@ -100,7 +102,18 @@ const unsigned char {name}[] =
         if( i % 8 == 0 and i < len(tiles)):
             content += "\n  "
 
-    return str.format(name=fname, content=content, length=size, tilesc=int(size/2/8))
+    metadata_str = ''
+    if(metadata is not None):
+        for key in metadata:
+            metadata_str += "#define {name}{key}Length {size}\n".format(name=fname, key=key.capitalize(), size=len(metadata[key]))
+            metadata_str += "const unsigned char {name}{key}[] =".format(name=fname, key=key.capitalize())
+            metadata_str += "\n{\n  "
+
+            meta_str = map(str, metadata[key])  
+            metadata_str += ','.join(meta_str)
+            metadata_str += "\n};\n"
+
+    return full_str.format(name=fname, content=content, length=size, tilesc=int(size/2/8), metadata=metadata_str)
 
 def get_file_content_h(tiles, fname):
     str = """
@@ -130,7 +143,7 @@ extern const unsigned char {name}[];
 
 # CORE
 # Convert image to byte array and save .c and .h files
-def convert_tileset(img_path, verbose):
+def convert_tileset(img_path, verbose, metadata):
 
     img_basename = os.path.splitext(os.path.basename(img_path))[0]
 
@@ -156,7 +169,7 @@ def convert_tileset(img_path, verbose):
             tiles = tiles + tile
 
     # time to write our files
-    content = get_file_content_c(tiles, img_basename)
+    content = get_file_content_c(tiles, img_basename, metadata)
 
     files_noext = os.path.splitext(img_path)[0]
     file_c = open(files_noext + ".c","w")

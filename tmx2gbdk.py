@@ -56,6 +56,30 @@ extern const unsigned char {name}[];
 """
     return str.format(name=fname, width=w, height=h)
 
+# extract metadata from a tileset
+# each node can have custom properties, 
+# we will compile them here to be sent
+# to tileset2gbdk, which will incorporate
+# said data to its output files
+# Input: 
+#   tileset node, we will ignore the "image" subnode
+# Output:
+#   dictionary of "property_name" : [indexes of tiles] 
+def extract_metadata_tiles(node):
+    metadata = {}
+    for child in node:
+        if(child.tag == 'tile'):
+            current_id = child.attrib['id']
+            # should only contain "properties" node at index 0
+            for prop in child[0]:
+                key = prop.attrib['name']
+                val = prop.attrib['value']
+                # xxx for now we only manage booleans
+                if(val == "1" or val == "true"):
+                    if key not in metadata:
+                        metadata[key] = []
+                    metadata[key].append(int(current_id))
+    return metadata
 
 def convert_tmx(path, verbose):
     tree = ET.parse(path)
@@ -71,9 +95,11 @@ def convert_tmx(path, verbose):
             if(verbose):
                 print("Found tileset, converting it too")
 
+            metadata = extract_metadata_tiles(child)
+
             absdir = os.path.abspath(os.path.dirname(path))
             adaptative_path=os.path.join(absdir, child[0].attrib['source'])
-            tileset2gbdk.convert_tileset(adaptative_path, verbose)
+            tileset2gbdk.convert_tileset(adaptative_path, verbose, metadata)
         elif(child.tag == 'layer'):
             # in layer we want to find our csv background layer
             for subchild in child:
